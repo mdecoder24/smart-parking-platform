@@ -3,31 +3,72 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Dark mode overrides */
+.dark {
+  --background: oklch(0.15 0 0); /* Deep dark blue-black */
+  --foreground: oklch(0.95 0 0); /* Near white */
+  --card: oklch(0.2 0.01 260); /* Slightly lighter dark with blue tint */
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+  --secondary: oklch(0.25 0.05 260); /* Darker blue */
+  --secondary-foreground: oklch(0.7 0.15 260); /* Lighter blue for text */
+  --muted: oklch(0.3 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --border: oklch(0.25 0 0);
+  --input: oklch(0.22 0 0);
+}
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  /* Modern SaaS Smart City Color Palette */
+  --background: oklch(0.98 0 0); /* Off-white for light mode */
+  --foreground: oklch(0.12 0 0); /* Deep charcoal */
+  
+  /* Deep Blue - Primary color inspired by smart city tech */
+  --primary: oklch(0.35 0.15 260); /* Deep Blue */
+  --primary-foreground: oklch(0.98 0 0);
+  
+  /* Emerald Green - Available parking indicator */
+  --success: oklch(0.65 0.18 150); /* Emerald Green */
+  --success-foreground: oklch(0.98 0 0);
+  
+  /* Card and UI Elements with glassmorphism support */
+  --card: oklch(0.985 0.001 0); /* White with slight tint */
+  --card-foreground: oklch(0.12 0 0);
+  --popover: oklch(0.98 0 0);
+  --popover-foreground: oklch(0.12 0 0);
+  
+  /* Secondary - Light accent for UI */
+  --secondary: oklch(0.92 0.02 260); /* Light Blue */
+  --secondary-foreground: oklch(0.35 0.15 260);
+  
+  /* Muted for subtle elements */
+  --muted: oklch(0.92 0 0);
+  --muted-foreground: oklch(0.52 0 0);
+  
+  /* Accent for highlights */
+  --accent: oklch(0.35 0.15 260); /* Deep Blue Accent */
+  --accent-foreground: oklch(0.98 0 0);
+  
+  /* Status colors */
+  --destructive: oklch(0.6 0.2 30); /* Soft Red for occupied */
+  --destructive-foreground: oklch(0.98 0 0);
+  --warning: oklch(0.75 0.16 70); /* Yellow for reserved */
+  
+  /* Border and input */
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.95 0 0);
+  --ring: oklch(0.35 0.15 260);
+  
+  /* Chart colors for analytics */
+  --chart-1: oklch(0.35 0.15 260); /* Deep Blue */
+  --chart-2: oklch(0.65 0.18 150); /* Emerald Green */
+  --chart-3: oklch(0.6 0.2 30); /* Soft Red */
+  --chart-4: oklch(0.75 0.16 70); /* Yellow */
+  --chart-5: oklch(0.5 0.12 200); /* Teal */
+  
+  /* Radius for glassmorphism */
+  --radius: 0.75rem;
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -122,9 +163,29 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Enhanced typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
 }
 
 @layer components {
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10;
+  }
+  
+  .glass-strong {
+    @apply bg-white/20 dark:bg-white/10 backdrop-blur-2xl border border-white/30 dark:border-white/20;
+  }
+  
+  /* Neumorphism effect */
+  .neumorphic {
+    @apply bg-gradient-to-br from-white/50 to-white/20 dark:from-white/5 dark:to-white/2 
+           shadow-lg dark:shadow-2xl border border-white/20 dark:border-white/10;
+  }
+  
   /* Smooth scroll behavior */
   html {
     scroll-behavior: smooth;
