@@ -1,18 +1,30 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MapPin, DollarSign, Clock, Shield } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { fadeInUp, fadeInDown, slideInUp, containerVariants, itemVariants, staggerContainer, staggerItem } from '@/lib/animations'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-background to-muted">
       {/* Navigation */}
-      <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <motion.nav 
+        className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+          >
             <MapPin className="w-6 h-6 text-primary" />
             <span className="text-xl font-bold text-foreground">ParkSmart</span>
-          </div>
+          </motion.div>
           <div className="flex gap-4">
             <Link href="/browse">
               <Button variant="outline">Browse Parking</Button>
@@ -22,37 +34,81 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <motion.section 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="text-center space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold text-balance text-foreground">
+          <motion.h1 
+            className="text-5xl md:text-6xl font-bold text-balance text-foreground"
+            variants={itemVariants}
+          >
             Find Parking
-            <span className="block text-primary">Your Way</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance">
+            <motion.span 
+              className="block text-primary"
+              variants={itemVariants}
+            >
+              Your Way
+            </motion.span>
+          </motion.h1>
+          <motion.p 
+            className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance"
+            variants={itemVariants}
+          >
             Real-time parking availability, dynamic pricing, and hassle-free reservations. Find your perfect spot in seconds.
-          </p>
-          <div className="flex gap-4 justify-center pt-6">
+          </motion.p>
+          <motion.div 
+            className="flex gap-4 justify-center pt-6"
+            variants={itemVariants}
+          >
             <Link href="/browse">
-              <Button size="lg" className="text-base">
-                Start Searching
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" className="text-base">
+                  Start Searching
+                </Button>
+              </motion.div>
             </Link>
             <Link href="#features">
-              <Button size="lg" variant="outline" className="text-base">
-                Learn More
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" variant="outline" className="text-base">
+                  Learn More
+                </Button>
+              </motion.div>
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Features Section */}
-      <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-background rounded-2xl">
-        <h2 className="text-3xl font-bold text-center text-foreground mb-12">Why Choose ParkSmart?</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.section 
+        id="features" 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-background rounded-2xl"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.h2 
+          className="text-3xl font-bold text-center text-foreground mb-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          Why Choose ParkSmart?
+        </motion.h2>
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {[
             {
               icon: MapPin,
@@ -77,48 +133,102 @@ export default function Home() {
           ].map((feature, i) => {
             const Icon = feature.icon
             return (
-              <Card key={i} className="p-6 border border-border hover:border-primary transition-colors">
-                <Icon className="w-8 h-8 text-primary mb-4" />
-                <h3 className="font-semibold text-lg text-foreground mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </Card>
+              <motion.div
+                key={i}
+                variants={staggerItem}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <Card className="p-6 border border-border hover:border-primary transition-colors h-full">
+                  <Icon className="w-8 h-8 text-primary mb-4" />
+                  <h3 className="font-semibold text-lg text-foreground mb-2">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                </Card>
+              </motion.div>
             )
           })}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Statistics Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <motion.section 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-100px" }}
+      >
         <div className="grid md:grid-cols-3 gap-8 text-center">
           {[
             { number: '500+', label: 'Parking Lots' },
             { number: '50K+', label: 'Available Spaces' },
             { number: '100K+', label: 'Happy Users' },
           ].map((stat, i) => (
-            <div key={i}>
-              <p className="text-4xl font-bold text-primary">{stat.number}</p>
+            <motion.div key={i} variants={staggerItem}>
+              <motion.p 
+                className="text-4xl font-bold text-primary"
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+              >
+                {stat.number}
+              </motion.p>
               <p className="text-muted-foreground mt-2">{stat.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <Card className="p-12 bg-primary text-primary-foreground border-0">
-          <div className="text-center space-y-6">
-            <h2 className="text-3xl font-bold">Ready to Park Smart?</h2>
-            <p className="text-lg opacity-90">
-              Get started today and never waste time searching for parking again.
-            </p>
-            <Link href="/browse">
-              <Button size="lg" variant="secondary" className="text-base">
-                Browse Available Lots
-              </Button>
-            </Link>
-          </div>
-        </Card>
-      </section>
+      <motion.section 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="p-12 bg-primary text-primary-foreground border-0">
+            <div className="text-center space-y-6">
+              <motion.h2 
+                className="text-3xl font-bold"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                Ready to Park Smart?
+              </motion.h2>
+              <motion.p 
+                className="text-lg opacity-90"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                Get started today and never waste time searching for parking again.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <Link href="/browse">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button size="lg" variant="secondary" className="text-base">
+                      Browse Available Lots
+                    </Button>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            </div>
+          </Card>
+        </motion.div>
+      </motion.section>
 
       {/* Footer */}
       <footer className="border-t border-border bg-muted/50 mt-20">

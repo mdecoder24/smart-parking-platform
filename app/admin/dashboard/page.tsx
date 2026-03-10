@@ -6,7 +6,9 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MapPin, LogOut, Users, DollarSign, BarChart3, AlertCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getParkingLots, getOccupancySummary, getRevenueSummary } from '@/lib/db-queries'
+import { staggerContainer, staggerItem, slideInDown } from '@/lib/animations'
 import type { ParkingLot, OccupancySummary, RevenueSummary } from '@/lib/types'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -75,7 +77,12 @@ export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-card sticky top-0 z-10">
+      <motion.div 
+        className="border-b border-border bg-card sticky top-0 z-10"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-primary hover:text-primary/80">
             <MapPin className="w-6 h-6" />
@@ -90,7 +97,7 @@ export default function AdminDashboard() {
             Logout
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Navigation Tabs */}
       <div className="border-b border-border bg-card">
