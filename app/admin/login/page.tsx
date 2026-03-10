@@ -11,7 +11,7 @@ import { MapPin, AlertCircle } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -22,10 +22,19 @@ export default function AdminLoginPage() {
     setLoading(true)
 
     try {
+      // Hardcoded admin bypass — no Supabase required
+      if (username === 'admin' && password === 'admin') {
+        localStorage.setItem('auth_token', 'admin-local-token')
+        localStorage.setItem('user_id', 'admin-local-user')
+        router.push('/admin/dashboard')
+        return
+      }
+
+      // Otherwise try Supabase login (treat username as email)
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: username, password }),
       })
 
       if (!response.ok) {
@@ -34,12 +43,8 @@ export default function AdminLoginPage() {
       }
 
       const data = await response.json()
-
-      // Store token in localStorage or cookie
       localStorage.setItem('auth_token', data.session.access_token)
       localStorage.setItem('user_id', data.user.id)
-
-      // Redirect to admin dashboard
       router.push('/admin/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
@@ -78,15 +83,15 @@ export default function AdminLoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                  Email
+                <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
+                  Username
                 </label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin"
                   required
                   disabled={loading}
                 />
@@ -119,8 +124,8 @@ export default function AdminLoginPage() {
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <p className="text-xs text-muted-foreground">
                 <strong>Demo Credentials:</strong><br />
-                Email: admin@example.com<br />
-                Password: (configured in your Supabase project)
+                Username: admin<br />
+                Password: admin
               </p>
             </div>
           </div>
