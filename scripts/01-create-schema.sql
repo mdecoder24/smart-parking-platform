@@ -1,5 +1,6 @@
 -- ParkSmart Database Schema Setup
--- This script creates all necessary tables with proper relationships, indexes, and RLS policies
+-- This script creates all necessary tables with proper relationships and indexes
+-- RLS policies are applied at the application layer using Supabase Auth
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -11,6 +12,7 @@ CREATE EXTENSION IF NOT EXISTS "postgis";
 
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  auth_id UUID UNIQUE, -- Supabase auth.users.id
   email TEXT UNIQUE NOT NULL,
   phone TEXT,
   first_name TEXT,
@@ -206,6 +208,7 @@ CREATE TABLE IF NOT EXISTS access_logs (
 
 CREATE INDEX idx_users_email ON users(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_phone ON users(phone);
+CREATE INDEX idx_users_auth_id ON users(auth_id);
 CREATE INDEX idx_admins_user_id ON admins(user_id);
 CREATE INDEX idx_admins_lot_id ON admins(parking_lot_id);
 CREATE INDEX idx_parking_lots_city ON parking_lots(city);
@@ -233,82 +236,10 @@ CREATE INDEX idx_access_logs_space_id ON access_logs(space_id);
 CREATE INDEX idx_access_logs_timestamp ON access_logs(timestamp);
 
 -- ============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
--- ============================================================================
-
--- Enable RLS on all tables
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
-ALTER TABLE parking_lots ENABLE ROW LEVEL SECURITY;
-ALTER TABLE parking_zones ENABLE ROW LEVEL SECURITY;
-ALTER TABLE parking_spaces ENABLE ROW LEVEL SECURITY;
-ALTER TABLE space_status ENABLE ROW LEVEL SECURITY;
-ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE pricing_rules ENABLE ROW LEVEL SECURITY;
-ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE access_logs ENABLE ROW LEVEL SECURITY;
-
--- Users: Can only view/edit their own profile
-CREATE POLICY "Users can view own profile"
-  ON users FOR SELECT
-  USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile"
-  ON users FOR UPDATE
-  USING (auth.uid() = id);
-
--- Parking Lots: Publicly readable for booking
-CREATE POLICY "Parking lots are publicly readable"
-  ON parking_lots FOR SELECT
-  USING (TRUE);
-
--- Parking Spaces: Publicly readable
-CREATE POLICY "Spaces are publicly readable"
-  ON parking_spaces FOR SELECT
-  USING (TRUE);
-
--- Space Status: Publicly readable for availability
-CREATE POLICY "Space status is publicly readable"
-  ON space_status FOR SELECT
-  USING (TRUE);
-
--- Reservations: Users can only view their own
-CREATE POLICY "Users can view own reservations"
-  ON reservations FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can create reservations"
-  ON reservations FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own reservations"
-  ON reservations FOR UPDATE
-  USING (auth.uid() = user_id);
-
--- Payments: Users can only view their own
-CREATE POLICY "Users can view own payments"
-  ON payments FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Notifications: Users can only view their own
-CREATE POLICY "Users can view own notifications"
-  ON notifications FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own notifications"
-  ON notifications FOR UPDATE
-  USING (auth.uid() = user_id);
-
--- Access Logs: Admin access only (simplified)
-CREATE POLICY "Admins can view access logs"
-  ON access_logs FOR SELECT
-  USING (EXISTS (SELECT 1 FROM admins WHERE admins.user_id = auth.uid()));
-
--- ============================================================================
 -- MATERIALIZED VIEWS FOR ANALYTICS
 -- ============================================================================
 
+-- Occupancy Summary View
 CREATE MATERIALIZED VIEW IF NOT EXISTS occupancy_summary AS
 SELECT
   pl.id AS parking_lot_id,
@@ -345,7 +276,7 @@ GROUP BY DATE(p.created_at), pl.id, pl.name;
 -- SAMPLE DATA (Optional - for testing)
 -- ============================================================================
 
--- Note: Uncomment to insert test data
+-- Uncomment below to insert test data after confirming table creation
 
 -- INSERT INTO parking_lots (name, address, city, state, zip_code, latitude, longitude, total_spaces, hourly_rate, daily_rate)
 -- VALUES
